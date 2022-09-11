@@ -1,0 +1,105 @@
+--ROOM CAPACITY
+SELECT *
+FROM room
+WHERE room.capacity >= 100;
+
+
+
+--EARLIEST COURSE
+SELECT *
+FROM course
+ORDER BY course.start_time
+LIMIT 1;
+
+
+
+--BIF MAJOR
+-- wrooooooooooooonnnnnnnnnnggggggggg
+SELECT *
+FROM course
+WHERE course.crn IN(
+	SELECT enrolled.course_number
+    FROM enrolled
+    WHERE enrolled.student_id=(
+    	SELECT student.id
+        FROM student
+        WHERE student.id =(  
+        	SELECT majors_in.student_id  -- GET STUDENT ID FROM THE DEPARTMENT ---
+            FROM majors_in
+            WHERE majors_in.dept_id=(  
+            	SELECT department.id   -- GET DEPARTMENT ID --------
+                FROM department
+                WHERE department.name='BIF'
+            )
+        )
+    )
+);
+-- COOOOOOOOOOOOOOOOOOOOOOOOOOORRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEEECTTTTTTTTTTTTTTTTTTTTTTTTT
+-- FIND ALL COURSE TAKEN BY BIF MAJORS
+-- major has student id and department id
+-- course has course and student id
+-- I can join on the student id column
+
+SELECT *
+FROM course
+WHERE course.crn IN(
+	SELECT enrolled.course_number
+    FROM enrolled
+    WHERE enrolled.student_id IN(
+    	SELECT student.id
+        FROM student
+        WHERE student.id IN(  
+        	SELECT majors_in.student_id  -- GET STUDENT ID FROM THE DEPARTMENT ---
+            FROM majors_in
+            WHERE majors_in.dept_id=(  
+            	SELECT department.id   -- GET DEPARTMENT ID --------
+                FROM department
+                WHERE department.name='BIF'
+            )
+        )
+    )
+);
+
+
+
+--NOT ENROLLED IN A COURSE
+SELECT student.name
+FROM student
+WHERE student.id IN(
+	SELECT enrolled.student_id
+    FROM enrolled
+    WHERE enrolled.course_number IN(
+    	SELECT course.crn
+        FROM course
+        WHERE course.name='NO COURSE'
+    )
+);
+
+
+-- COUNT STUDENTS ENROLLED IS CSC275
+SELECT count(student.name)
+FROM student
+WHERE student.id IN(
+	SELECT enrolled.student_id
+    FROM enrolled
+    WHERE enrolled.course_number IN(
+    	SELECT course.crn
+        FROM course
+        WHERE course.name='CSC275'
+    )
+);
+
+
+
+-- COUNT STUDENTS ENROLLED IN ANY COURSE
+SELECT COUNT(student.id)
+FROM student
+WHERE student.id IN(
+	SELECT enrolled.student_id
+    FROM enrolled
+    WHERE enrolled.course_number IN(
+    	SELECT course.crn
+        FROM course
+        WHERE course.name NOT IN ('NO COURSE')
+    )
+);
