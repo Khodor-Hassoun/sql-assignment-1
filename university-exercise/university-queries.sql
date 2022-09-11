@@ -103,3 +103,23 @@ WHERE student.id IN(
         WHERE course.name NOT IN ('NO COURSE')
     )
 );
+
+
+
+-- NUMBER OF MAJORS EACH STUDENT HAS DECLARED
+SELECT majors_in.student_id, COUNT(majors_in.dept_id)
+FROM majors_in
+WHERE majors_in.dept_id IN(
+	SELECT department.id
+    FROM department
+)
+GROUP BY majors_in.student_id;
+
+
+
+-- For each department with more than one majoring student.
+-- print the department’s name and the number of majoring students
+SELECT department.name, COUNT(majors_in.student_id)
+FROM department, majors_in
+WHERE department.id = majors_in.dept_id
+GROUP BY department.id;
